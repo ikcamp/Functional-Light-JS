@@ -1,5 +1,5 @@
 # Functional-Light JavaScript
-# Foreword
+# 序
 
 It's no secret that I am a functional programming nut. I evangelize functional ideas and languages wherever I can, try to read the latest academic papers, study abstract algebra in my spare time…the works. Even in JavaScript, I refuse to write an impure statement, which is what lead to writing Professor Frisby's Mostly Adequate Guide to Functional Programming. Yep, full on, dogmatic zealot.
 
