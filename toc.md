@@ -1,4 +1,4 @@
-# Functional-Light JavaScript
+# 轻量函数式编程
 
 ## Table of Contents
 
