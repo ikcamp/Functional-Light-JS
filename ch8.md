@@ -1,4 +1,4 @@
-# JavaScript轻量级函数式编程
+# JavaScript 轻量级函数式编程
 # Chapter 8: List Operations
 # 第 8 章：操作列表
 
