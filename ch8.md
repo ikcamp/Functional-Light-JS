@@ -1,18 +1,20 @@
 # JavaScript 轻量级函数式编程
 # Chapter 8: List Operations
-# 第 8 章：操作列表
+# 第 8 章：列表操作
 
 Did you have fun down our little closures/objects rabbit hole in the previous chapter? Welcome back!
 在上一章中对 闭包／对象 玩的还开心吗？欢迎回来！
 > If you can do something awesome, keep doing it repeatedly.
 > 如果你能把一件事情做的非常好，那就坚持做下去。
 We've already seen several brief references earlier in the text to some utilities that we now want to take a very close look at, namely `map(..)`, `filter(..)`, and `reduce(..)`. In JavaScript, these utilities are typically used as methods on the array (aka, "list") prototype, so we would naturally refer to them as array or list operations.
+我们在之前的文章中就已经看到了一些简短的参考，现在，我们要来仔细的看一下这些实用函数，即 `map(..)`, `filter(..)`, 和 `reduce(..)`。在 JavaScript 中，这些实用函数通常被应用在数组（又称为"list"）的原型上，所以，我们称他们为数组或者列表操作。
 
-Before we talk about the specific array methods, we want to examine conceptually what these operations are used for. It's equally important in this chapter that you understand *why* list operations are important as it is to understand *how* list operations work. Make sure you approach this chapter with that detail in mind.
-
+Before we talk about the specific array methods, we want to examine conceptually what these operations are used for. It's equally important in this chapter that you understand *why* list operations are important as it is to understand *how* list operations work. Make sure you approach this chapter with that detail in mind. 
+在我们谈论特定的数组方法之前，我们想要从概念上检查这些操作的用途。在本章中和它同样重要的是，明白 *为什么* 列表操作是重要的，因为它可以让我们理解列表操作是 *如何* 工作的。请确保在这一章中你注意到了这些细节。
 The vast majority of common illustrations of these operations, both outside of this book and here in this chapter, depict trivial tasks performed on lists of values (like doubling each number in an array); it's a cheap and easy way to get the point across.
-
+无论是本书外部还是本章中的关于这些操作的大量插图，都描述了在值列表上操作的微小任务（就像将数组的每个数字加倍）；这是一个获得关键点的简单的方法。
 But don't just gloss over these simple examples and miss the deeper point. Some of the most important FP value in understanding list operations comes from being able to model a sequence of tasks -- a series of statements that wouldn't otherwise *look* like a list -- as a list operation instead of performing them individually.
+但是不要仅仅掩盖这些简单的例子而忽略深层次的要点。 在理解列表操作上 FP 更重要的一些价值来自于可以模拟一个任务列表
 
 This isn't just a trick to write more terse code. What we're after is to move from imperative to declarative style, to make the code patterns more readily recognizable and thus more readable.
 
@@ -37,39 +39,43 @@ As a quick preamble to our discussion in this chapter, I want to call out a few 
 ## Map
 
 We'll start our exploration of FP list operations with one of the most basic and fundamental: `map(..)`.
-
+我们将开始 FP 列表操作的探索，其中最基础的就是： `map(..)` 。
 A mapping is a transformation from one value to another value. For example, if you start with the number `2` and you multiply it by `3`, you have mapped it to `6`. It's important to note that we're not talking about mapping transformation as implying *in-place* mutation or reassignment; rather mapping transformation projects a new value from one location to the other.
-
+映射是把一个值转换成另一个值。例如，如果你用 `2` 乘以 `3` ，就可以映射出 `6` 。需要注意的是我们不是在讨论把映射转换暗示为 *in-place* 转换或者重新赋值；而是把原值转换成另一个新的值。
 In other words:
+换句话说：
 
 ```js
 var x = 2, y;
 
 // transformation / projection
+// 转换 / 变换
 y = x * 3;
 
 // mutation / reassignment
+// 转换 / 重新赋值
 x = x * 3;
 ```
 
 If we define a function for this multiplying by `3`, that function acts as a mapping (transformer) function:
-
+如果我们定义一个函数，它的功能是一个数乘以 `3` ，那么这个函数就可以做为映射（转换器）函数：
 ```js
 var multipleBy3 = v => v * 3;
 
 var x = 2, y;
 
 // transformation / projection
+// 转换 / 变换
 y = multiplyBy3( x );
 ```
 
 We can naturally extend mapping from a single value transformation to a collection of values. `map(..)` is an operation that transforms all the values of a list as it projects them to a new list:
-
+我们能够自然地将单一值转换成值的集合。 `map(..)` 是将一个列表的所有值转变成一个新的列表的操作。
 <p align="center">
 	<img src="fig9.png" width="400">
 </p>
 
-To implement `map(..)`:
+实现 `map(..)`:
 
 ```js
 function map(mapperFn,arr) {
@@ -86,24 +92,24 @@ function map(mapperFn,arr) {
 ```
 
 **Note:** The parameter order `mapperFn, arr` may feel backwards at first, but this convention is much more common in FP libraries because it makes these utilities easier to compose (with currying).
-
+**注意：**  `mapperFn, arr` 这种参数的顺序我们刚开始会感觉这是反向的，但是这种约定在 FP 的函数库中是很常见的，因为它使实用函数更容易（和柯里化）组合。
 The `mapperFn(..)` is naturally passed the list item to map/transform, but also an `idx` and `arr`. We're doing that to keep consistency with the built-in array `map(..)`. These extra pieces of information can be very useful in some cases.
-
+`mapperFn(..)` 不仅自然的传递列表项到映射或者转换(todo)，而且也有 `idx` 和 `arr` 。我们这样做是为了与内置的数组 `map(..)` 保持一致性。这些额外的信息在一些情况下是非常有用的。
 But in other cases, you may want to use a `mapperFn(..)` that only the list item should be passed to, because the extra arguments might change its behavior. In "All For One" in Chapter 3, we introduced `unary(..)`, which limits a function to only accept a single argument (no matter how many are passed).
-
+但是另外一种情况，你可能想要用 `mapperFn(..)` ，这仅仅是一个列表项应该传递的，因为这个额外参数可能会改变它的行为。在第 3 章的 "All For One"(todo 名称未定) 我们引入了 `unary(..)` ，它限制了一个函数仅仅接受一个参数(不管有多少会被传递过来)。
 Recall the example from Chapter 3 about limiting `parseInt(..)` to a single argument to be used safely as a `mapperFn(..)`:
-
+回顾第三章的例子，我们讲到通过限制 `parseInt` 函数接受单一参数，并将其作为安全的 `mapperFn(..)` 函数：
 ```js
 map( ["1","2","3"], unary( parseInt ) );
 // [1,2,3]
 ```
 
 JavaScript provides the `map(..)` utility built-in on arrays, making it very convenient to use as part of a chain of operations on a list.
-
+JavaScript 提供了 `map(..)` 实用函数内置数组，使它非常方便的作为链式操作的一部分来使用。
 **Note:** The JavaScript array prototype operations (`map(..)`, `filter(..)`, and `reduce(..)`) all accept an optional last argument to use for `this` binding of the function. As we discussed in "What's This?" in Chapter 2, `this`-based coding should generally be avoided wherever possible in terms of being consistent with the best practices of FP. As such, our example implementations in this chapter do not support such a `this`-binding feature.
-
+**注意：** JavaScript 数组原型操作（`map(..)`, `filter(..)` 和 `reduce(..)`），它们接受的最后一个参数都是可选的，是用 `this` 来和这个函数绑定。正如我们在第 2 章中讨论的 “来说说 This ？” 这一部分， `this` —— 根据 FP 一贯的最佳实践，这种基础编码通常应该尽可能地避免。同样地，本章中的实例项目不支持像 `this` 这样的绑定特性。
 Beyond the obvious numeric or string operations you could perform against a list of those respective value types, here's some other examples of mapping operations. We can use `map(..)` to transform a list of functions into a list of their return values:
-
+除了这些明显的数值型或者字符串操作之外，你还能够对它们各自的值类型的列表执行，这是其他的一些映射操作的例子。我们可以使用 `map(..)` 把函数列表转换成返回值列表：
 ```js
 var one = () => 1;
 var two = () => 2;
@@ -114,7 +120,7 @@ var three = () => 3;
 ```
 
 Or we can first transform a list of functions by composing each of them with another function, and then execute them:
-
+或者我们先转换函数的列表，把它们组成另一个函数，然后执行：
 ```js
 var increment = v => ++v;
 var decrement = v => --v;
@@ -129,11 +135,11 @@ var double = v => v * 2;
 ```
 
 Something interesting to observe about `map(..)`: we typically would assume that the list is processed left-to-right, but there's nothing about the concept of `map(..)` that really requires that. Each transformation is supposed to be independent of every other transformation.
-
+一些关于  `map(..)` 的有趣的观察：我们通常会猜想列表是从左到右被处理的，但是这并没有我们真正需要的关于 `map(..)` 的概念。每一个转换都应该独立于其他的转变。
 Mapping in a general sense could even been parallelized in an environment that supports that, which for a large list could drastically improve performance. We don't see JavaScript actually doing that because there's nothing that requires you to pass a pure function as `mapperFn(..)`, even though you **really ought to**. If you were to pass an impure function and JS were to run different calls in different orders, it would quickly cause havoc.
-
+一般来说，映射能够在支持的环境中并行，对于一个重的列表来说能够极大的提升性能。实际上，我们并没有看到 JavaScript 做了什么，那是因为你不需要通过纯粹的函数 `mapperFn(..)` ，即使你真的 **真的应该** 。如果你通过一个不纯的函数和 js 在不同的命令下运行不同的回调，将要迅速的遭到严重的破坏。
 Even though theoretically, individual mapping operations are independent, JS has to assume that they're not. That's a bummer.
-
+即使从理论上讲，单独的映射操作是独立的，但是 JS 不得不认为并不是这样的。真是无赖。
 ### Sync vs Async
 
 The list operations we're discussing in this chapter all operate synchronously on a list of values that are all already present; `map(..)` as conceived here is an eager operation. But another way of thinking about the mapper function is as an event handler which is invoked for each new value encountered in the list.
