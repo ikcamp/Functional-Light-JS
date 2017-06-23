@@ -19,19 +19,31 @@ The vast majority of common illustrations of these operations, both outside of t
 
 But don't just gloss over these simple examples and miss the deeper point. Some of the most important FP value in understanding list operations comes from being able to model a sequence of tasks -- a series of statements that wouldn't otherwise *look* like a list -- as a list operation instead of performing them individually.
 
-但是不要仅仅掩盖这些简单的例子而忽略深层次的要点。 在理解列表操作上 FP 更重要的一些价值来自于可以模拟一个任务列表
+但是不要无视这些简单的例子而忽略深层次的要点。 FP 更重要的一些价值在于理解列表操作，这些列表操作来源于可以构建一系列任务 —— 这一系列声明 *看起来* 不像列表 —— 就如同列表操作不是单个执行的。
 
 This isn't just a trick to write more terse code. What we're after is to move from imperative to declarative style, to make the code patterns more readily recognizable and thus more readable.
 
+这不仅仅是编写更简洁的代码的技巧。我们追求的是从命令式转换为声明式风格，使代码模式更简明，从而更有可读性。
+
 But there's something **even more important to grasp**. With imperative code, each intermediate result in a set of calculations is stored in variable(s) through assignment. The more of these imperative patterns your code relies on, the harder it is to verify that there aren't mistakes -- in the logic, accidental mutation of values, or hidden side causes/effects lurking.
+
+但是有些东西要 **更加重要的去理解** 。 使用命令式代码，一组计算的每个中间结果都通过赋值给变量进行存储。你的代码越依赖这些命令式模式，就越难去验证它们的错误 —— 逻辑上说，是值的意外变化或者是隐藏的副作用／潜在的影响。
 
 By chaining and/or composing list operations together, the intermediate results are tracked implicitly and largely protected from these hazards.
 
+通过链式组合列表操作，中间结果会被隐式的跟踪，这在很大程度上避免了风险。
+
 **Note:** More than previous chapters, to keep the many following code snippets as brief as possible, we'll rely heavily on the ES6 `=>` form. However, my advice on `=>` from Chapter 2 still applies for general coding.
+
+**注意：** 不只是前几章，尽可能简短的保留代码段，我们将会依赖 ES6 的 `=>` 语法。然而，我建议第 2 章的 `=>` 仍然适用于大部分编码。
 
 ## Non-FP List Processing
 
+## 非 FP 列表处理
+
 As a quick preamble to our discussion in this chapter, I want to call out a few operations which may seem related to JavaScript arrays and FP list operations, but which aren't. These operations will not be covered here, because they are not consistent with general FP best practices:
+
+作为在本章中讨论的一个简短的序言，我想要调用一些可能与 JavaScript 数组和 FP 列表操作有关的操作，但是并不能这样。这些操作不会被包含在里面，因为它们和一般的 FP 最佳实践不一致：
 
 * `forEach(..)`
 * `some(..)`
@@ -39,7 +51,11 @@ As a quick preamble to our discussion in this chapter, I want to call out a few 
 
 `forEach(..)` is an iteration helper, but it's designed for each function call to operate with side effects; you can probably guess why that's not an endorsed FP list operation for our discussion!
 
+`forEach(..)` 是一个辅助迭代的方法，但是它是为每个调用有副作用的函数设计的；你或许会想为什么在我们的讨论中它不是一个被支持的 FP 列表操作。
+
 `some(..)` and `every(..)` do encourage the use of pure functions (specifically, predicate functions like `filter(..)` does), but they inevitably reduce a list to a `true` / `false` result, essentially like a search or matching. These two utilities don't really fit the mold of how we want to model our code with FP, so we're going to skip covering them here.
+
+`some(..)` 和 `every(..)` 鼓励使用纯函数（特别是像 `filter(..)` 这样的断言函数），但是他们不可避免的 reduce 一个列表并返回 `true` / `false`，本质上就像搜索或者匹配。这两个实用函数并不真的适合用 FP 来构建代码的模式，所以我们将略过这个内容。
 
 ## Map
 
