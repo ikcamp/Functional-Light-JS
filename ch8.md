@@ -193,9 +193,15 @@ Even though theoretically, individual mapping operations are independent, JS has
 
 ### Sync vs Async
 
+### 同步 vs 异步
+
 The list operations we're discussing in this chapter all operate synchronously on a list of values that are all already present; `map(..)` as conceived here is an eager operation. But another way of thinking about the mapper function is as an event handler which is invoked for each new value encountered in the list.
 
+我们在本章讨论的列表操作都在已经存在的值列表中同步执行；`map(..)` 和设想的一样是一个立刻执行的操作。但是另一种思考 mapper 函数的方式是作为事件句柄，它被列表中的每个新值调用。
+
 Imagine something fictional like this:
+
+想象一下像这样的虚构：
 
 ```js
 var newArr = arr.map();
@@ -205,16 +211,22 @@ arr.addEventListener( "value", multiplyBy3 );
 
 Now, any time a value is added to `arr`, the `multiplyBy3(..)` event handler -- mapper function -- is called with the value, and its transformation is added to `newArr`.
 
+现在，一个值被随时添加到 `arr`，`multiplyBy3(..)` 事件具柄 —— mapper 函数 —— 用这个值调用，然后被它处理过的值被添加到了 `newArr` 中。 
+
 What we're hinting at is that arrays, and the array operations we perform on them, are the eager synchronous versions, whereas these same operations can also be modeled on a "lazy list" (aka, stream) that receives its values over time. We'll dive into this topic in Chapter 10.
+
+我们暗示的是数组，对它们执行的数组操作是热更新的版本，然而这些相同的操作仿照“懒列表”（又称：流）随着时间的推移接收值。然而这些相同的操作被称为“懒列表”接收他的值。我们将会在第 10 章深入探讨这个话题。
 
 ### Mapping vs Eaching
 
 Some advocate using `map(..)` as a general form of `forEach(..)`-iteration, where essentially the value received is passed through untouched, but then some side-effect can be performed:
 
+有些人提倡使用 `map(..)` 作为 `forEach(..)` —— 迭代 的通用式，从本质上说，接收的值被处理时是未受影响的，但是仍然会带有一些副作用：
+
 ```js
 [1,2,3,4,5]
 .map( function mapperFn(v){
-	console.log( v );			// side effect!
+	console.log( v );			// 副作用！
 	return v;
 } )
 ..
@@ -222,13 +234,21 @@ Some advocate using `map(..)` as a general form of `forEach(..)`-iteration, wher
 
 The reason this technique can seem useful is that the `map(..)` returns the array so you can keep chaining more operations after it; the return value of `forEach(..)` is `undefined`. However, I think you should avoid using `map(..)` in this way, because it's a net confusion to use a core FP operation in a decidedly un-FP way.
 
+这个技术看起来有用的原因是 `map(..)` 返回的是数组，所以你可以在后面添加更多的链式操作；`forEach(..)`的返回值是 `undefined`。然而我认为你应该避免使用 `map(..)` 这个方法，因为在一个明显的非 FP 方法上使用 FP 的核心操作是非常混乱的。
+
 You've heard the old addage about using the right tool for the right job, right? Hammer for a nail, screwdriver for a screw, etc. This is slightly different: it's use the right tool *in the right way*.
+
+听过一个老的谚语，关于使用正确的工具做正确的事情，对吧？用锤子钉钉，用螺丝刀拧螺丝，等等。这里稍微不同的是：以 *正确的方式* 使用正确的工具。
 
 A hammer is meant to be swung in your hand; if you instead hold it in your mouth and try to hammer the nail, you're not gonna be very effective. `map(..)` is intended to map values, not create side effects.
 
-### A Word: Functors
+锤子在你手中摇摆；如果你把它放在嘴里，尝试去敲钉子，很可能就不会有什么效果。 `map(..)` 主要是 map 值，而不是产生副作用。
 
+### A Word: Functors
+### 一个单词：函子
 We've mostly tried to stay away from artificial invented terminology in FP as much as possible in this book. We have used official terms at times, but mostly when we can derive some sense of meaning from them in regular everyday conversation.
+
+我们在这本书里尽可能的避免使用人工发明术语。我们偶尔使用官方术语，但是当我们能够推出有意义的术语时大多数是在他们的日常对话中。
 
 I'm going to very briefly break that pattern and use a word that might be a little intimidating: functor. The reason I want to talk about functors here is because we now already understand what they do, and because that term is used heavily throughout the rest of FP literature; you being at least familiar with  and not scared by it will be beneficial.
 
