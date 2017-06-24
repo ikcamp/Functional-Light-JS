@@ -248,25 +248,35 @@ A hammer is meant to be swung in your hand; if you instead hold it in your mouth
 ### 一个单词：函子
 We've mostly tried to stay away from artificial invented terminology in FP as much as possible in this book. We have used official terms at times, but mostly when we can derive some sense of meaning from them in regular everyday conversation.
 
-我们在这本书里尽可能的避免使用人工发明术语。我们偶尔使用官方术语，但是当我们能够推出有意义的术语时大多数是在他们的日常对话中。
+在本书中我们尽可能的避免使用 FP 中的人工术语。我们偶尔使用官方术语，但是从他们日常的交谈中我们可以获得一些有意义的思想。
 
 I'm going to very briefly break that pattern and use a word that might be a little intimidating: functor. The reason I want to talk about functors here is because we now already understand what they do, and because that term is used heavily throughout the rest of FP literature; you being at least familiar with  and not scared by it will be beneficial.
 
+我打算非常简短的打破这种模式，使用一个可能有些吓人的单词： functor。我在这里讨论函子的原因是因为我们已经明白了它们是做什么的了，因为这个术语在剩下的 FP 文章中被大量的使用；你至少是熟悉而且不害怕它的。
+
 A functor is a value that has a utility for using an operator function on that value.
+
+函子是一个值，它具有对该值使用运算符函数的实用函数。
 
 If the value in question is compound, meaning it's comprised of individual values -- as is the case with arrays, for example! -- a functor uses the operator function on each individual value. Moreover, the functor utility creates a new compound value holding the results of all the individual operator function calls.
 
+如果讨论的这个值是合成的就意味着它是由独立的值组成的 —— 例如数组！函子对每个独立的值使用运算符函数。此外，函子实用函数创建了一个新的合成值，保存了所有调用独立的运算符函数的结果。
+
 This is all a fancy way of describing what we just looked at with `map(..)`. The `map(..)` function takes its associated value (an array) and a mapping function (the operator function), and executes the mapping function for each individual value in the array. Finally, it returns a new array with all the newly mapped values in it.
 
+这是我们刚刚看到的 `map(..)` 的一种特殊的方式。`map(..)` 函数使值（一个数组）和 mapping 函数（运算符函数）相关联，并对数组的每个独立的值执行 mapping 函数。最后，返回一个新的数组，它包含所有新映射的值。
+
 Another example: a string functor would be a string plus a utility that executes some operator function across all the characters in the string, returning a new string with the processed letters. Consider this highly-contrived example:
+
+另一个例子：字符串函子是将一个字符串加上一个实用函数，并且对字符串中的所有字符执行一些运算符函数，返回一个由处理过的字符组成的新的字符串。 字符串中的所有人物，返回一个新的字符串处理信件。思考一下这个被高度设计的例子：
 
 ```js
 function uppercaseLetter(c) {
 	var code = c.charCodeAt( 0 );
 
-	// lowercase letter?
+	// 小写字符？
 	if (code >= 97 && code <= 122) {
-		// uppercase it!
+		// 转换成大写！
 		code = code - 32;
 	}
 
