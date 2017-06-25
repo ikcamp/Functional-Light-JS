@@ -747,6 +747,8 @@ Now that we feel somewhat comfortable with the foundational list operations `map
 
 Filtering a list to include only unique values, based on `indexOf(..)` searching ( which uses `===` strict equality comparision):
 
+基于 `indexOf(..)` 过滤仅包含一个值的列表（使用  `===` 严格的相等比较）。
+
 ```js
 var unique =
 	arr =>
@@ -757,8 +759,12 @@ var unique =
 ```
 
 This technique works by observing that we should only include the first occurrence of an item from `arr` into the new list; when running left-to-right, this will only be true if its `idx` position is the same as the `indexOf(..)` found position.
+todo
+这个方法的工作原理是：我们只需要包含在项目中第一次发生的从 `arr` 到新的列表；当从左到右的运行，只有当 `idx` 和 `indexOf(..)` 的值一样时才会是真。
 
 Another way to implement `unique(..)` is to run through `arr` and include an item into a new (initially empty) list if that item cannot already be found in the new list. For that processing, we use `reduce(..)`:
+
+实现 `unique(..)` 的另一种方式是通过 `arr` ，如果在新的列表中找不到这个项目，则将该项目存储到一个新的（最初是空的）列表中去。对于这种处理，我们使用 `reduce(..)`：
 
 ```js
 var unique =
@@ -772,7 +778,11 @@ var unique =
 
 **Note:** There are many other ways to implement this algorithm using more imperative approaches like loops, and many of them are likely "more efficient" performance-wise. However, the advantage of either of these presented approaches is that they use existing built-in list operations, which makes them easier to chain/compose alongside other list operations. We'll talk more about those concerns later in this chapter.
 
+**注意：** 有许多其他的方法来实现这个算法，比如像 loops 这样的命令式方法，它们中的大多数可能有“更高效”的性能。然而，这两种方法的优点是它们使用现有的内置列表操作，是它们更容易和其他的列表操作一起使用。本章稍后将会详细讨论这些问题。
+
 `unique(..)` nicely produces a new list with no duplicates:
+
+`unique(..)` 很好的生成了一个没有重复的新列表：
 
 ```js
 unique( [1,4,7,1,3,1,7,9,2,6,4,0,5,3] );
@@ -783,17 +793,23 @@ unique( [1,4,7,1,3,1,7,9,2,6,4,0,5,3] );
 
 From time to time, you may have (or produce through some other operations) an array that's not just a flat list of values, but with nested arrays, such as:
 
+有时，你可能有（或者通过其他的方法生成）一个数组，它不仅仅是一个简单的值的列表，还包含潜逃的数组，比如：
+
 ```js
 [ [1, 2, 3], 4, 5, [6, [7, 8]] ]
 ```
 
 What if you'd like to transform it into:
 
+如果你想把它转换成下面这样：
+
 ```js
 [ 1, 2, 3, 4, 5, 6, 7, 8 ]
 ```
 
 The operation we're looking for is typically called `flatten(..)`, and it could be implemented like this using our swiss army knife `reduce(..)`:
+
+我们寻找的操作被称为 `flatten(..)`，它可以用我们的瑞士军刀 `reduce(..)` 来实现：
 
 ```js
 var flatten =
@@ -806,7 +822,11 @@ var flatten =
 
 **Note:** This implementation choice relies on recursion to handle the nesting of lists. More on recursion in a later chapter.
 
+**注意：** 它依赖于递归来处理列表的嵌套，更多关于递归的内容在后面的章节会提到。
+
 To use `flatten(..)` with an array of arrays (of any nested depth):
+
+对多维数组（深层嵌套）使用 `flatten(..)` 。
 
 ```js
 flatten( [[0,1],2,3,[4,[5,6,7],[8,[9,[10,[11,12],13]]]]] );
@@ -814,6 +834,8 @@ flatten( [[0,1],2,3,[4,[5,6,7],[8,[9,[10,[11,12],13]]]]] );
 ```
 
 You might like to limit the recursive flattening to a certain depth. We can handle this by adding an optional `depth` limit argument to the implementaiton:
+
+你可能希望限制递归展开到一定的程度。我们可以通过在实现中添加一个可选的 `depth` 限制参数来处理这个问题。
 
 ```js
 var flatten =
@@ -832,6 +854,8 @@ var flatten =
 ```
 
 Illustrating the results with different flattening depths:
+
+用不同的展开程度来说明结果：
 
 ```js
 flatten( [[0,1],2,3,[4,[5,6,7],[8,[9,[10,[11,12],13]]]]], 0 );
@@ -857,6 +881,8 @@ flatten( [[0,1],2,3,[4,[5,6,7],[8,[9,[10,[11,12],13]]]]], 5 );
 
 One of the most common usages of `flatten(..)` behavior is when you've mapped a list of elements where each transformed value from the original list is now itself a list of values. For example:
 
+最常见的方法之一`flatten(..)` 的行为是：当你 map 元素列表的时候，每个原始列表中被转换的值，现在本身就是一个值列表。例如：
+
 ```js
 var firstNames = [
 	{ name: "Jonathan", variations: [ "John", "Jon", "Jonny" ] },
@@ -872,6 +898,8 @@ firstNames
 
 The return value is an array of arrays, which might be more awkward to work with. If we want a single dimension list with all the names, we can then `flatten(..)` that result:
 
+返回的值是一个多维数组，这可能会比较尴尬。如果我们想要一个具有所有名称的单维数组，那就可以用 `flatten(..)` 来处理返回值：
+
 ```js
 flatten(
 	firstNames
@@ -883,7 +911,11 @@ flatten(
 
 Besides being slightly more verbose, the disadvantage of doing the `map(..)` and `flatten(..)` as separate steps is primarily around performance; this approach processes the list twice.
 
+稍微啰嗦一下， `map(..)` 和 `flatten(..)` 的缺点是作为单独的步骤它主要是围绕性能的；此方法处理两次列表。
+
 FP libraries typically define a `flatMap(..)` (often also called `chain(..)`) that does the mapping-then-flattening combined. For consistency and ease of composition (via currying), the `flatMap(..)` / `chain(..)` utility typically matches the `mapperFn, arr` parameter order that we saw earlier with the standalone `map(..)`, `filter(..)`, and `reduce(..)` utilities.
+
+FP 函数库定义了 `flatMap(..)`（经常被称作 `chain(..)`），它做了映射，然后平坦的整合在一起。为了一致性且易于组合（通过柯里化），`flatMap(..)` / `chain(..)` 实用函数匹配 `mapperFn, arr` 的参数规则，可以很轻松的看到独立的 `map(..)`、`filter(..)`和`reduce(..)` 实用函数。
 
 ```js
 flatMap( entry => [entry.name].concat( entry.variations ), firstNames );
@@ -893,6 +925,8 @@ flatMap( entry => [entry.name].concat( entry.variations ), firstNames );
 
 The naive implementation of `flatMap(..)` with both steps done separately:
 
+`flatMap(..)` 的实现分为两个步骤：
+
 ```js
 var flatMap =
 	(mapperFn,arr) =>
@@ -901,7 +935,11 @@ var flatMap =
 
 **Note:** We use `1` for the flattening-depth because the typical definition of `flatMap(..)` is that the flattening is shallow on just the first level.
 
+**注意：**我们使用 `1` 来表示展开的深度，因为 `flatMap(..)` 的特有定义是仅有第一级是很浅的。todo
+
 Since this approach still processes the list twice resulting in worse performance, we can combine the operations manually, using `reduce(..)`:
+
+由于这种方法仍然处理两次列表，导致性能比较差，所以我们可以使用 `reduce(..)` 来手动合并操作：
 
 ```js
 var flatMap =
@@ -914,10 +952,13 @@ var flatMap =
 
 While there's some convenience and performance gained with a `flatMap(..)` utility, there may very well be times when you need other operations like `filter(..)`ing mixed in. If that's the case, doing the `map(..)` and `flatten(..)` separately might still be more appropriate.
 
+虽然使用 `flatMap(..)` 实用程序可以获得一些便利和性能，但是当需要像 `filter(..)` 这种其他的操作混合时确实很棒的。如果是那样的话， `map(..)` 和 `flatten(..)` 可能更合适。
+
 ### Zip
 
 So far, the list operations we've examined have operated on a single list. But some cases will need to process multiple lists. One well-known operation alternates selection of values from each of two input lists into sub-lists, called `zip(..)`:
 
+到目前为止，我们检查过的操作都是在耽搁列表上执行的。但是一些情况下可能需要处理多个列表。一个众所周知的操作，将两个
 ```js
 zip( [1,3,5,7,9], [2,4,6,8,10] );
 // [ [1,2], [3,4], [5,6], [7,8], [9,10] ]
