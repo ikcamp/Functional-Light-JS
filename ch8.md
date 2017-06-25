@@ -503,11 +503,19 @@ I think using `filterIn(..)` and `filterOut(..)` (known as `reject(..)` in Ramda
 
 While `map(..)` and `filter(..)` produce new lists, typically this third operator (`reduce(..)`) combines (aka "reduces") the values of a list down to a single finite (non-list) value, like a number or string. However, later in this chapter, we'll look at how you can push `reduce(..)` to use it in more advanced ways. `reduce(..)` is one of the most important FP tools; it's like a swiss army all-in-one knife with all its usefulness.
 
+当 `map(..)` 和 `filter(..)` 产生新的列表时，第三个运算符（`reduce(..)`）把列表的值组合成（又称 “reduces”）一个单一有限（非列表）的值，就像数字或者字符串。然而，在本章的后面，将会看到用更炫酷的方式来使用 `reduce(..)`。`reduce(..)` 是最重要的 FP 工具之一；它就像瑞士军刀一样非常有用。
+
 A combination/reduction is abstractly defined as taking two values and making them into one value. Some FP contexts refer to this as "folding", as if you're folding two values together into on value. That's a helpful visualization, I think.
+
+combination/reduction 被抽象的定义为将两个值合并成一个值。在 FP 中被称之为 "folding"，就像你将两个值折叠成一个值一样。我认为这是一个非常帮助的可视化方法。
 
 Just like with mapping and filtering, the manner of the combination is entirely up to you, and generally dependent on the types of values in the list. For example, numbers will typically be combined through arithmetic, strings through concatenation, and functions through composition.
 
+就像 mapping 和 filtering 一样，组合的方式完全取决于你，它通常依赖于列表中值的类型。例如，数字通过算数来结合，字符串通过连接来结合，函数通过合成来组合。
+
 Sometimes a reduction will specify an `initialValue` and start its work by combining it with the first value in the list, cascading down through each of the rest of the values in the list. That looks like this:
+
+有时 reduce 将指定一个 `initialValue`，通过和列表的第一个值结合来启动它的工作，然后和列表中剩下的值逐个级联。就像这样：
 
 <p align="center">
 	<img src="fig11.png" width="400">
@@ -515,15 +523,23 @@ Sometimes a reduction will specify an `initialValue` and start its work by combi
 
 Alternately, you can omit the `initialValue` in which case the first value of the list will act in place of the `initialValue` and the combining will start with the second value in the list, like this:
 
+或者，你可以省略 `initialValue`， 在这种情况下，列表中的第一个值将会取代 `initialValue`，结合将会从列表的第二个值开始，就像这样：
+
 <p align="center">
 	<img src="fig12.png" width="400">
 </p>
 
 **Warning:** In JavaScript, if there's not at least one value in the reduction (either in the array or specified as `initialValue`), an error is thrown. Be careful not to omit the `initialValue` if the list for the reduction could possibly be empty under any circumstance.
 
+**警告：** 在 JavaScript 中，如果 reduce 中没有值（在数组中或者被指定为 `initialValue`）就会抛错。需要注意的是，在任何情况下如果列表可能会空，请不要忽略 `initialValue`。
+
 The function you pass to `reduce(..)` to perform the reduction is typically called a reducer. A reducer has a different signature from the mapper and predicate functions we looked at earlier. Reducers primarily receive the current reduction result as well as the next value to reduce it with. The current result at each step of the reduction is often referred to as the accumulator.
 
+传给 `reduce(..)` 执行 reduction 的函数称为 reducer。reducer 和我们之前看到的 mapper 和谓词函数有不同的签名。首先 reducer 接收一个当前的 reduction 结果以及下一个值去 reduce。每一步被提交之后的结果被称为累加器。
+
 For example, consider the steps involved in multiply-reducing the numbers `5`, `10`, and `15`, with an `initialValue` of `3`:
+
+例如：观察乘法所涉及的步骤 —— 减少这些数字：`5`、`10` 和 `15`，`initialValue` 为 `3`：
 
 1. `3` * `5` = `15`
 2. `15` * `10` = `150`
@@ -531,12 +547,16 @@ For example, consider the steps involved in multiply-reducing the numbers `5`, `
 
 Expressed in JavaScript using the built-in `reduce(..)` method on arrays:
 
+在 JavaScript 中数组是使用内置的 `reduce(..)` 方法被表达的：
+
 ```js
 [5,10,15].reduce( (product,v) => product * v, 3 );
 // 2250
 ```
 
 But a standalone implementation of `reduce(..)` might look like this:
+
+但是一个独立的 `reduce(..)` 实现可能像这样：
 
 ```js
 function reduce(reducerFn,initialValue,arr) {
@@ -564,7 +584,11 @@ function reduce(reducerFn,initialValue,arr) {
 
 Just as with `map(..)` and `filter(..)`, the reducer function is also passed the lesser-common `idx` and `arr` arguments in case that's useful to the reduction. I would say I don't typically use these, but I guess it's nice to have them available.
 
+就像 `map(..)` 和 `filter(..)` 一样，reducer 函数也传入了可能对 reduction 有用的 `idx` 和 `arr` 参数。我通常是不使用它们的，但是我觉得可以取得它们是极好的。
+
 Recall in Chapter 4, we discussed the `compose(..)` utility and showed an implementation with `reduce(..)`:
+
+回顾第 4 章，我们讨论了 `compose(..)` 实用函数，并展示了 `reduce(..)` 的实现：
 
 ```js
 function compose(...fns) {
@@ -577,6 +601,8 @@ function compose(...fns) {
 ```
 
 To illustrate `reduce(..)`-based composition differently, consider a reducer that will compose functions left-to-right (like `pipe(..)` does), to use in an array chain:
+
+为了说明 `reduce(..)` 的不同组成，可以考虑一个从左向右组成的函数（如 `pipe(..)`）用于链式数组：
 
 ```js
 var pipeReducer = (composedFn,fn) => pipe( composedFn, fn );
@@ -592,7 +618,12 @@ fn( 10 );			// 12240  (10 * 3 * 17 * 6 * 4)
 
 `pipeReducer(..)` is unfortunately not point-free (see "No Points" in Chapter 3), but we can't just pass `pipe(..)` as the reducer itself, because it's variadic; the extra arguments (`idx` and `arr`) that `reduce(..)` passes to its reducer function would be problematic.
 
+todo
+不幸的是 `pipeReducer(..)` 是没有 point-free （参见第 3 章的 “No Points”），但是我们不能只通过 `pipe(..)` 作为 reducer 本身，因为它是可变的；`reduce(..)` 传给它的 reducer 函数的额外参数（`idx` 和 `arr`）是不明确的。
+
 Earlier we talked about using `unary(..)` to limit a `mapperFn(..)` or `predicateFn(..)` to just a single argument. It might be handy to have a `binary(..)` that does something similar but limits to two arguments, for a `reducerFn(..)` function:
+todo
+之前我们讨论过使用 `unary(..)` 来限制 `mapperFn(..)` 或者 `predicateFn(..)` 只有一个参数。类似但是限制只有两个参数的 `binary(..)` 
 
 ```js
 var binary =
@@ -602,6 +633,8 @@ var binary =
 ```
 
 Using `binary(..)`, our previous example is a little cleaner:
+
+使用 `binary(..)` 让我们之前的例子更简洁：
 
 ```js
 var pipeReducer = binary( pipe );
@@ -617,6 +650,8 @@ fn( 10 );			// 12240  (10 * 3 * 17 * 6 * 4)
 
 Unlike `map(..)` and `filter(..)` whose order of passing through the array wouldn't actually matter, `reduce(..)` definitely uses left-to-right processing. If you want to reduce right-to-left, JavaScript provides a `reduceRight(..)`, with all other behaviors the same as `reduce(..)`:
 
+与 `map(..)` 和 `filter(..)` 不同的是，传递数组的顺序并不重要，`reduce(..)` 是从左到右处理。如果想要从右到左，JavaScript 提供了 `reduceRight(..)`方法，其他的行为都和 `reduce(..)` 一样：
+
 ```js
 var hyphenate = (str,char) => str + "-" + char;
 
@@ -628,6 +663,8 @@ var hyphenate = (str,char) => str + "-" + char;
 ```
 
 Where `reduce(..)` works left-to-right and thus acts naturally like `pipe(..)` in composing functions, `reduceRight(..)`'s right-to-left ordering is natural for performing a `compose(..)`-like operation. So, let's revisit `compose(..)` using `reduceRight(..)`:
+
+`reduce(..)` 从左到右工作，在组合函数中更像 `pipe(..)`，`reduceRight(..)` 从右到左的顺序对于执行 `compose(..)` 是很自然的。所以，我们来重温一下 `compose(..)` 使用 `reduceRight(..)`：
 
 ```js
 function compose(...fns) {
@@ -641,9 +678,13 @@ function compose(...fns) {
 
 Now, we don't need to do `fns.reverse()`; we just reduce from the other direction!
 
+现在，我们不需要 `fns.reverse()`；我们只是从另一个方向 reduce！
+
 ### Map As Reduce
 
 The `map(..)` operation is iterative in its nature, so it can also be represented as a reduction (`reduce(..)`). The trick is to realize that the `initialValue` of `reduce(..)` can be itself an (empty) array, in which case the result of a reduction can be another list!
+
+`map(..)` 操作在本质上迭代的，因此它也可以表示为 reduction（`reduce(..)`）。诀窍是要意识到 `reduce(..)` 的 `initialValue` 可以是一个（空）数组，在这种情况下 reduction 的结果是是一个新的列表！
 
 ```js
 var double = v => v * 2;
@@ -662,11 +703,18 @@ var double = v => v * 2;
 
 **Note:** We're cheating with this reducer and allowing a side effect by allowing `list.push(..)` to mutate the list that was passed in. In general, that's not a good idea, obviously, but since we know the `[]` list is being created and passed in, it's less dangerous. You could be more formal -- yet less performant! -- by creating a new list with the val `concat(..)`d onto the end. We'll come back to this cheat in Appendix A.
 
+todo
+**注意：** 我们正在欺骗这个 reducer，允许 `list.push(..)` 改变已经传入的列表带来的副作用。总的来说，这不是一个好主意，显然，我们知道 `[]` 列表正在创建和传入，并不是很危险。你可以更正规一些，但是性能不是很好！最后用 `concat(..)` 创建一个新的列表。我们将在附录 A 中详细讨论这个欺骗方法。
+
 Implementing `map(..)` with `reduce(..)` is not on its surface an obvious step or even an improvement. However, this ability will be a crucial recognition for more advanced techniques like those we'll cover in Appendix A "Transducing".
+
+用 `reduce(..)` 实现 `map(..)` 在表面上并不是明显的一步或者是提高，这种能力是对更高技术的重要认可，就像我们将要在附录 A 中介绍的 “Transducing”。todo
 
 ### Filter As Reduce
 
 Just as `map(..)` can be done with `reduce(..)`, so can `filter(..)`:
+
+正如 `map(..)` 可以用 `reduce(..)` 实现一样，也可以用 `filter(..)`：
 
 ```js
 var isOdd = v => v % 2 == 1;
@@ -684,10 +732,16 @@ var isOdd = v => v % 2 == 1;
 ```
 
 **Note:** More impure reducer cheating here. Instead of `list.push(..)`, we could have done `list.concat(..)` and returned the new list. We'll come back to this cheat in Appendix A.
+todo
+**注意：** 更不纯的 reducer 在作弊。我们可以结束 `list.concat(..)` 而不是 `list.push(..)`并返回一个新的值。我们将在附录 A 中详细讨论这个欺骗方法。
 
 ## Advanced List Operations
 
+## 高级的列表操作
+
 Now that we feel somewhat comfortable with the foundational list operations `map(..)`, `filter(..)`, and `reduce(..)`, let's look at a few more-sophisticated operations you may find useful in various situations. These are generally utilities you'll find in various FP libraries.
+
+现在我们对基础的列表操作 `map(..)`、`filter(..)`和 `reduce(..)`有了基本的认识，接下来我们来看一些在各种情况都都很有用的更复杂的操作。你将会发现在各种 FP 函数库中这些是非常普遍的实用函数。
 
 ### Unique
 
