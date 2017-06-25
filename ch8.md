@@ -55,7 +55,7 @@ As a quick preamble to our discussion in this chapter, I want to call out a few 
 
 `some(..)` and `every(..)` do encourage the use of pure functions (specifically, predicate functions like `filter(..)` does), but they inevitably reduce a list to a `true` / `false` result, essentially like a search or matching. These two utilities don't really fit the mold of how we want to model our code with FP, so we're going to skip covering them here.
 
-`some(..)` 和 `every(..)` 鼓励使用纯函数（特别是像 `filter(..)` 这样的断言函数），但是他们不可避免的 reduce 一个列表并返回 `true` / `false`，本质上就像搜索或者匹配。这两个实用函数并不真的适合用 FP 来构建代码的模式，所以我们将略过这个内容。
+`some(..)` 和 `every(..)` 鼓励使用纯函数（特别是像 `filter(..)` 这样的谓词函数），但是他们不可避免的 reduce 一个列表并返回 `true` / `false`，本质上就像搜索或者匹配。这两个实用函数并不真的适合用 FP 来构建代码的模式，所以我们将略过这个内容。
 
 ## Map
 
@@ -293,37 +293,65 @@ stringMap( uppercaseLetter, "Hello World!" );
 
 `stringMap(..)` allows a string to be a functor. You can define a mapping function for any data structure; as long as the utility follows these rules, the data structure is a functor.
 
+`stringMap(..)` 允许字符串成为函子。你可以为任何构造函数定义 mapping 函数；只要实用函数遵循这些规则，数据结构就是一个函子。
+
 ## Filter
 
 Imagine I bring an empty basket with me to the grocery store to visit the fruit section; there's a big display of fruit (apples, oranges, and bananas). I'm really hungry so I want to get as much fruit as they have available, but I really only prefer the round fruits (apples and oranges). So I sift through each fruit one-by-one, and I walk away with a basket full of just the apples and oranges.
 
+想象我带着空篮子去到食品杂货店参观水果区域；那儿有很多水果（苹果、橘子和香蕉）。我真的很饿所以我想要得到尽可能多的水果，但是我确实更喜欢圆形的水果（苹果和橘子），所以我就一个个的筛选每个水果，最后带着一篮子的苹果和橘子离开了。
+
 Let's say we call this process *filtering*. Would you more naturally describe my shopping as starting with an empty basket and **filtering in** (selecting, including) only the apples and oranges, or starting with the full display of fruits and **filtering out** (skipping, excluding) the bananas as my basket is filled with fruit?
+
+我们称这次过程为 *filtering*。当我的篮子装满水果的时候，你会自然地描述我的购物是以空篮子开始，只 **过滤** （选择，包括）苹果和橘子，或者以所有展示的水果开始，**过滤掉**（跳过，排除）香蕉？
 
 If you cook spaghetti in a pot of water, and then pour it into a strainer (aka filter) over the sink, are you filtering in the spaghetti or filtering out the water? If you put coffee grounds into a filter and make a cup of coffee, did you filter in the coffee into your cup, or filter out the coffee grounds?
 
+如果你在一壶水里煮意大利面，然后将其倒入水槽的过滤器（又称 filter ）中，那么你是过滤出意大利面还是过滤掉水呢？如果你把咖啡渣放入过滤器中，然后做出一杯咖啡，那么你是把咖啡过滤到你的杯子里，还是过滤掉咖啡渣呢？
+
 Does your view of filtering depend on whether the stuff you want is "kept" in the filter or passes through the filter?
+
+你的过滤视图取决于你想要的内容是“保留”在过滤器中的还是被过滤器滤出的？
 
 What about on airline / hotel websites, when you specify options to "filter your results"? Are you filtering in the results that match your criteria, or are you filtering out everything that doesn't match? Think carefully: this example might have a different semantic than the previous ones.
 
+当你在航空公司／酒店的网站上指定选项“筛选结果”时，你是在符合条件的结果中进行过滤，还是过滤掉不匹配的所有内容？仔细想想：这个例子可能与之前的意思不同。
+
 Depending on your perspective, filter is either exclusionary or inclusionary. This conceptual conflation is unfortunate.
+
+根据你的观点，filter 要么是排他的，要么是包容的。这种概念上的合并是不成功的。
 
 I think the most common interpretation of filtering -- outside of programming, anyway -- is that you filter out unwanted stuff. Unfortunately, in programming, we have essentially flipped this semantic to be more like filtering in wanted stuff.
 
+我认为关于 filter 最通用的解释是 -- 在编程之外，就是过滤掉了不想要的东西。但是，在编程里，这个语义有了实质性的反转，更像是在想要的东西里进行过滤。
+
 The `filter(..)` list operation takes a function to decide if each value in the original array should be in the new array or not. This function needs to return `true` if a value should make it, and `false` if it should be skipped. A function that returns `true` / `false` for this kind of decision making goes by the special name: predicate function.
+
+`filter(..)` 列表操作使用一个函数来确定原数组中的每个值是否应该出现在新数组中。如果出现，这个函数就需要返回 `true`，如果不出现，就需要返回 `false`。返回 `true` / `false`的函数有一个特殊的命名：谓词函数。
 
 If you think of `true` as being as a positive signal, the definition of `filter(..)` is that you are saying "keep" (to filter in) a value rather than saying "discard" (to filter out) a value.
 
+如果你认为 `true` 是一个肯定的标志，那么 `filter(..)` 的定义就是所说的“保留”（过滤出）而不是“丢弃”（过滤掉）一个值。
+
 To use `filter(..)` as an exclusionary action, you have to twist your brain to think of positively signaling an exclusion by returning `false`, and passively letting a value pass through by returning `true`.
+
+使用 `filter(..)` 这个排除性的方法的时候，你必须扭转自己的思维，想到通过返回 `false` 来暗示这是一个排除的信号，通过返回 `true` 来传递一个值。
 
 The reason this semantic mismatch matters is because of how you will likely name the function used as `predicateFn(..)`, and what that means for the readability of code. We'll come back to this point shortly.
 
+语意不匹配的原因是因为你可能命名这个函数为 `predicateFn(..)`以及这对于代码的可读性意味着什么。我们很快就会讲到这一点。
+
 Here's how to visualize a `filter(..)` operation across a list of values:
+
+以下是如何通过值列表来可视化 `filter(..)` 操作
 
 <p align="center">
 	<img src="fig10.png" width="400">
 </p>
 
 To implement `filter(..)`:
+
+执行 `filter(..)`：
 
 ```js
 function filter(predicateFn,arr) {
@@ -341,9 +369,15 @@ function filter(predicateFn,arr) {
 
 Notice that just like `mapperFn(..)` before, `predicateFn(..)` is passed not only the value but also the `idx` and `arr`. Use `unary(..)` to limit its arguments as necessary.
 
+要注意的是在 `mapperFn(..)` 之前， `predicateFn(..)` 不仅传值还传了 `idx` 和 `arr`。这时就要根据需要来使用 `unary(..)` 限制其参数。
+
 Just as with `map(..)`, `filter(..)` is provided as a built-in utility on JS arrays.
 
+就像 `map(..)` 一样，在 JS 的数组里 `filter(..)` 是作为一个内置实用函数被提供的。
+
 Let's consider a predicate function like this:
+
+让我们来看一个像这样的谓词函数：
 
 ```js
 var whatToCallIt = v => v % 2 == 1;
@@ -351,11 +385,15 @@ var whatToCallIt = v => v % 2 == 1;
 
 This function uses `v % 2 == 1` to return `true` or `false`. The effect here is that an odd number will return `true`, and an even number will return `false`. So, what should we call this function? A natural name might be:
 
+该函数使用 `v % 2 == 1` 来返回一个 `true` 或者 `false`。效果是奇数会返回 `true`，偶数会返回 `false`。所以，我们应该如何来称呼这个函数呢？自然的命名可能是：
+
 ```js
 var isOdd = v => v % 2 == 1;
 ```
 
 Consider how you might use `isOdd(..)` with a simple value check somewhere in your code:
+
+思考一下如何使用 `isOdd(..)` 在代码的某个地方做一个简单的值检查：
 
 ```js
 var midIdx;
@@ -370,6 +408,8 @@ else {
 
 Makes sense, right? But, let's consider using it with the built-in array `filter(..)` to filter a list of values:
 
+没毛病，对吧？但是，我们来使用内置数组 `filter(..)` 来筛选值列表：
+
 ```js
 [1,2,3,4,5].filter( isOdd );
 // [1,3,5]
@@ -377,9 +417,15 @@ Makes sense, right? But, let's consider using it with the built-in array `filter
 
 If you described the `[1,3,5]` result, would you say, "I filtered out the even numbers", or would you say "I filtered in the odd numbers"? I think the former is a more natural way of describing it. But the code reads the opposite. The code reads, almost literally, that we "filtered (in) each number that is odd".
 
+如果描述结果 `[1,3,5]`，你可能会说“我过滤掉了偶数”，或者会说“我过滤出了奇数”？我认为前者的描述方式更自然。但是代码却是相反的。代码几乎每个字母都在表达我们“过滤出了每个奇数”。
+
 I personally find this semantic confusing. There's no question there's plenty of precedent for experienced developers. But if you just start with a fresh slate, this expression of the logic seems kinda like not speaking without a double negative -- aka, speaking with a double negative.
 
+我个人认为这个语义是混乱的。毫无疑问，对于有经验的开发者来说有很多先例。但是如果你是从一个全新的平板开始，这个逻辑的表达不像说话那样没有双重否定 —— 也就是说，是一个双重否定。
+
 We could make this easier by renaming the function from `isOdd(..)` to `isEven(..)`:
+
+我们通过将函数 `isOdd(..)` 重命名为 `isEven(..)` 来简化这个操作：
 
 ```js
 var isEven = v => v % 2 == 1;
@@ -390,13 +436,19 @@ var isEven = v => v % 2 == 1;
 
 Yay! But that function makes no sense with its name, in that it returns `false` when it's even:
 
+很棒！但是这个函数的名称是没有任何意义的，因为当传入偶数是它会返回 `false` ：
+
 ```js
 isEven( 2 );		// false
 ```
 
 Yuck.
 
+讨厌！
+
 Recall that in "No Points" in Chapter 3, we defined a `not(..)` operator that negates a predicate function. Consider:
+
+回想一下第 3 章的 "No Points" ，我们定义了一个否定谓词函数的 `not(..)` 运算符。
 
 ```js
 var isEven = not( isOdd );
@@ -406,6 +458,8 @@ isEven( 2 );		// true
 
 But we can't use *this* `isEven(..)` with `filter(..)` the way it's currently defined, because our logic will be reversed; we'll end up with evens, not odds. We'd need to do:
 
+但是我们不能使用 *this* `isEven(..)` 来 `filter(..)` 当前定义的方式，因为我们的逻辑将会被逆转；最终将会结得到偶数，而不是奇数。我们需要这样做：
+
 ```js
 [1,2,3,4,5].filter( not( isEven ) );
 // [1,3,5]
@@ -413,9 +467,13 @@ But we can't use *this* `isEven(..)` with `filter(..)` the way it's currently de
 
 That defeats the whole purpose, though, so let's not do that. We're just going in circles.
 
+然而，这违背了我们的初衷，所以不要不要这样做。我们只是在兜圈子。
+
 ### Filtering-Out & Filtering-In
 
 To clear up all this confusion, let's define a `filterOut(..)` that actually **filters out** values by internally negating the predicate check. While we're at it, we'll alias `filterIn(..)` to the existing `filter(..)`:
+
+为了消除这些混乱，我们来定义一个 `filterOut(..)`，就是通过内部取消谓词检查来 **过滤掉** 值。同时，对现存的 `filter(..)`取一个别名 `filterIn(..)`：
 
 ```js
 var filterIn = filter;
@@ -427,6 +485,8 @@ function filterOut(predicateFn,arr) {
 
 Now we can use whichever filtering makes most sense at any point in our code:
 
+现在我们可以在代码中使用任意的过滤器：
+
 ```js
 isOdd( 3 );								// true
 isEven( 2 );							// true
@@ -436,6 +496,8 @@ filterOut( isEven, [1,2,3,4,5] );		// [1,3,5]
 ```
 
 I think using `filterIn(..)` and `filterOut(..)` (known as `reject(..)` in Ramda) will make your code a lot more readable than just using `filter(..)` and leaving the semantics conflated and confusing for the reader.
+
+我认为比起使用 `filter(..)` 使读者对语义困惑来说，使用 `filterIn(..)` 和 `filterOut(..)`（在 Ramda 中被称为 `reject(..)`）会使代码的可读性更高。
 
 ## Reduce
 
