@@ -1,20 +1,28 @@
 # Functional-Light JavaScript
-# Chapter 5: Reducing Side Effects
+# 第五章 : 减少副作用
 
+在第二章，我们讨论了一个函数除了它的返回值之外还可以输出什么内容。现在你应该很熟悉用函数式编程的方法定义一个函数了，所以对于函数式编程的副作用你应该有所了解。
 In Chapter 2, we discussed how a function can have outputs besides its `return` value. By now you should be very comfortable with the FP definition of a function, so the idea of such side outputs -- side effects! -- should smell.
 
+我们将研究各种各样的副作用并且要看看他们为什么会对我们的代码质量和可读性造成损害。
 We're going to examine the various different forms of side effects and see why they are harmful to our code's quality and readability.
 
+这一章的要点是编写出没有副作用的程序是不可能的。当然，也不是不可能，当然可以编写出没有副作用的程序。但是这样的话程序就不会做任何有用和显著的事情。如果你编写出来一个0副作用的程序，你就无法区分它和一个被删除的或者空程序的区别。
 But let me not bury the lede here. The punchline to this chapter: it's impossible to write a program with no side effects. Well, not impossible; you certainly can. But that program won't do anything useful or observable. If you wrote a program with zero side effects, you wouldn't be able to tell the difference between it and a deleted or empty program.
 
+函数式编程者并没有消除所有的副作用。相反，我们的目标是尽可能的限制他们。要做到这一点，我们首先需要完全理解函数式编程的副作用。
 The FPer doesn't eliminate all side effects. Rather, the goal is to limit them as much as possible. To do that, we first need to fully understand them.
 
+## 
 ## Effects On The Side, Please
 
+因果关系 : 一个我们人类对周围世界最基本、最直观的例子。推一下放在桌子边沿上的一本书，书会掉落。不需要你拥有一个物理学的学位你也会知道这是因为你刚刚推了书并且书掉落的原因是因为地心引力，这是一个明确并直接的关系。
 Cause and effect: one of the most fundamental, intuitive observations we humans can make about the world around us. Push a book off the edge of a table, it falls to the ground. You don't need a physics degree to know the cause was you pushing the book and the effect was gravity pulling it to the ground. There's a clear and direct relationship.
 
+在编程中，我们也完全会处理因果关系。如果你调用了一个函数（起因），就会在屏幕上输出一条消息（结果）。
 In programming, we also deal entirely in cause and effect. If you call a function (cause), it displays a message on the screen (effect).
 
+当我们在阅读程序的时候，能够清晰明确的知道每一个起因和每一个结果是非常重要的。在某种程度上，
 When reading a program, it's supremely important that the reader be able to clearly identify each cause and each effect. To any extent where a direct relationship between cause and effect cannot be seen readily upon a read-through of the program, that program's readability is degraded.
 
 Consider:
