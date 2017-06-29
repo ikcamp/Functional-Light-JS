@@ -958,7 +958,8 @@ While there's some convenience and performance gained with a `flatMap(..)` utili
 
 So far, the list operations we've examined have operated on a single list. But some cases will need to process multiple lists. One well-known operation alternates selection of values from each of two input lists into sub-lists, called `zip(..)`:
 
-到目前为止，我们检查过的操作都是在耽搁列表上执行的。但是一些情况下可能需要处理多个列表。一个众所周知的操作，将两个
+到目前为止，我们检查过的列表操作都是在单个列表上执行的。但是一些情况下可能需要处理多个列表。一个众所周知的操作` zip(..)`，是从两个输入列表中交替选择出值并存放到子列表中：
+
 ```js
 zip( [1,3,5,7,9], [2,4,6,8,10] );
 // [ [1,2], [3,4], [5,6], [7,8], [9,10] ]
@@ -966,7 +967,11 @@ zip( [1,3,5,7,9], [2,4,6,8,10] );
 
 Values `1` and `2` were selected into the sub-list `[1,2]`, then `3` and `4` into `[3,4]`, etc. The definition of `zip(..)` requires a value from each of the two lists. If the two lists are of different lengths, the selection of values will continue until the shorter list has been exhausted, with the extra values in the other list ignored.
 
+值 `1` 和 `2` 被选中到子列表 `[1,2]` 中，然后 `3` 和 `4` 被选中到 `[3,4]` 中，等等。`zip(..)` 的定义是需要两个列表中的每个值。如果两个列表的长度不同，那么对值的选择将会持续，直到较短的列表被耗尽，另外一个列表的多余的值会被忽略。
+
 An implementation of `zip(..)`:
+
+`zip(..)` 的实现：
 
 ```js
 function zip(arr1,arr2) {
@@ -984,11 +989,17 @@ function zip(arr1,arr2) {
 
 The `arr1.slice()` and `arr2.slice()` calls ensure `zip(..)` is pure by not causing side effects on the received array references.
 
+`arr1.slice()` 和 `arr2.slice()` 的调用是确保 `zip(..)` 是纯的，不会对接收到的数组引用造成副作用。
+
 **Note:** There are some decidedly un-FP things going on in this implementation. There's an imperative `while`-loop and mutations of lists with both `shift()` and `push(..)`. Earlier in the book, I asserted that it's reasonable for pure functions to use impure behavior inside them (usually for performance), as long as the effects are fully self-contained. This implementation is safely pure.
+
+**注意：** 在这个实现的过程中，有一些明显的非 FP 的事情正在发生。有一个不可避免的 `while` 循环和 `shift()` 和 `push(..)`对列表的转换。在本书的前面，我声明过纯函数在内部使用不纯的行为（通常是为了性能）是合理的。只要效果是完全独立的。这种实现就是很安全的，
 
 ### Merge
 
 Merging two lists by interleaving values from each source looks like this:
+
+就像这样通过交叉存取每个数据的值来合并两个列表：
 
 ```js
 mergeLists( [1,3,5,7,9], [2,4,6,8,10] );
@@ -996,6 +1007,8 @@ mergeLists( [1,3,5,7,9], [2,4,6,8,10] );
 ```
 
 It may not be obvious, but this result seems similar to what we get if we compose `flatten(..)` and `zip(..)`:
+
+可能还不是很明显，但是如果我们组合 `flatten(..)` 和 `zip(..)`，那么结果可能是相似的：
 
 ```js
 zip( [1,3,5,7,9], [2,4,6,8,10] );
@@ -1011,7 +1024,11 @@ flatten( zip( [1,3,5,7,9], [2,4,6,8,10] ) );
 
 However, recall that `zip(..)` only selects values until the shorter of two lists is exhausted, ignoring the leftover values; merging two lists would most naturally retain those extra values. Also, `flatten(..)` works recursively on nested lists, but you might expect list-merging to only work shallowly, keeping nested lists.
 
+然而，回想一下，忽略被剩余的值，`zip(..)` 只能选择值，直到较短的列表被耗尽；合并两个列表自然的将这些额外的值包含进来了。此外，`flatten(..)` 在嵌套的列表上递归运行，但是你可能期望保留那些嵌套的列表，只是被浅合并。
+
 So, let's define a `mergeLists(..)` that works more like we'd expect:
+
+所以，我们来定义一个 `mergeLists(..)` 方法，它更像我们所期望的那样：
 
 ```js
 function mergeLists(arr1,arr2) {
@@ -1034,7 +1051,11 @@ function mergeLists(arr1,arr2) {
 
 **Note:** Various FP libraries don't define a `mergeLists(..)` but instead define a `merge(..)` that merges properties of two objects; the results of such a `merge(..)` will differ from our `mergeLists(..)`.
 
+**注意：** FP 的各种函数库中没有定义 `mergeLists(..)` 这个方法，反而定义了合并两个对象属性的 `merge(..)` 方法；`merge(..)` 的结果与 `mergeLists(..)` 的有所不同。
+
 Alternatively, here's a couple of options to implement the list merging as a reducer:
+
+这里有几个选项作为 reducer 来执行列表的合并：
 
 ```js
 // via @rwaldron
@@ -1053,6 +1074,8 @@ var mergeReducer =
 
 And using a `mergeReducer(..)`:
 
+使用 `mergeReducer(..)`：
+
 ```js
 [1,3,5,7,9]
 .reduce( mergeReducer, [2,4,6,8,10] );
@@ -1061,11 +1084,17 @@ And using a `mergeReducer(..)`:
 
 **Tip:** We'll use the `mergeReducer(..)` trick later in the chapter.
 
+**提示：** 在本章的后面我们将使用 `mergeReducer(..)`。
+
 ## Method vs. Standalone
 
 A common source of frustration for FPers in JavaScript is unifying their strategy for working with utilities when some of them are provided as standalone functions -- think about the various FP utilities we've derived in previous chapters -- and others are methods of the array prototype -- like the ones we've seen in this chapter.
 
+在 JavaScript 中对于 FPers 来说一个常见的挫折是当一些实用函数被当作独立函数提供时统一它们的策略 —— 思考一下前几章中我们推断的各种 FP 实用函数 —— 其他的一些数组原型方法 —— 就像我们在本章中看到的一样。
+
 The pain of this problem becomes more evident when you consider combining multiple operations:
+
+当考虑合并多个操作的时候，这个问题的痛点就变得更加明显了：
 
 ```js
 [1,2,3,4,5]
@@ -1086,6 +1115,8 @@ reduce(
 ```
 
 Both API styles accomplish the same task, but they have very different ergonomics. Many FPers will prefer the latter to the former, but the former is unquestionably more common in JavaScript. One thing specifically that's disliked about the latter is the nesting of the calls. The preference for the method chain style -- typically called a fluent API style, as in jQuery and other tools -- is that it's compact/concise and it reads in declarative top-down order.
+
+两种 API 风格完全相同的任务，它们的原理却非常不同。
 
 The visual order for that manual composition of the standalone style is neither strictly left-to-right (top-to-bottom) nor right-to-left (bottom-to-top); it's inner-to-outer, which harms the readability.
 
