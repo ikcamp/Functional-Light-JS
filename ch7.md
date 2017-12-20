@@ -524,8 +524,6 @@ function recordKeypress(keypressEvt) {
 }
 ```
 
-If you already have an array -- just an object with public numerically-named properties -- this is very straightforward using a built-in JS array utility `forEach(..)`:
-
 如果你已经有一个数组，正好是一个拥有公开的用数字命名属性的对象 —— 非常直接地使用 JS 对象的内建工具 `forEach(..)`：
 
 ```js
